@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+
+    <title>Dandelion</title>
+
+    <link rel="stylesheet" href="main.css">
+
+    <script src="../../src/index.js"></script>
+    <script async>
+        const dandelion = new Dandelion();
+
+        dandelion.defaultOnStart = () => {
+
+            article.innerHTML = '';
+            article.style.opacity = 0;
+
+            footer.style.opacity = 0;
+
+            spinner.style.opacity = 1;
+        }
+
+        dandelion.defaultRefreshRate = 100;
+        dandelion.defaultOnRefresh = null;
+
+        dandelion.defaultOnDone = () => {
+
+            if (!dandelion.sequences)
+                return;
+
+            article.innerHTML = '';
+            article.style.opacity = 1;
+
+            footer.style.opacity = 1;
+
+            spinner.style.opacity = 0;
+
+            const words = dandelion.predict({
+                start: /^[A-Z]/,
+                size: document.querySelector('input[name="size"]').value
+            });
+
+            for (const w of words) {
+
+                if (dandelion.type === 'words') {
+
+                    if (!Object.values(CHARACTERS_TO_PADE).some(value => { return w === value }))
+                        article.innerHTML += ' ';
+                }
+
+                article.innerHTML += w;
+            }
+
+            article.innerHTML = article.innerHTML.split('\n ').join('\n');
+            article.innerHTML = article.innerHTML.trim() + '...';
+        }
+
+        fetch('../../data/lalka.txt').then(response => {
+            response.text().then(text => {
+                dandelion.train(text);
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <header>
+        <h1>Lalka</h1>
+        <hr />
+
+        <div>
+            Typ łańcucha:<br />
+            <select onchange="dandelion.type = value === 'Słowny' ? 'words': 'chars';">
+                <option> Słowny </option>
+                <option> Literowy </option>
+            </select>
+        </div>
+
+        <div>
+            Długość łańcucha:<br />
+            <input type="number" min="1" value="3" onchange="dandelion.K = +this.value" />
+        </div>
+
+        <div>
+            Długość opowiadania (w typie łańcucha):<br />
+            <input type="number" name="size" min="1" value="2500" onchange="dandelion.defaultOnStart(); setTimeout(dandelion.defaultOnDone, parseInt(article.style.transitionDuration));" />
+        </div>
+
+        <hr />
+    </header>
+
+    <spinner>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </spinner>
+
+    <article style="transition-duration: 1000ms;"></article>
+
+    <footer style="opacity: 0;">
+        <input type="button" value="Nowe Opowiadanie" onmouseup="dandelion.defaultOnStart(); setTimeout(dandelion.defaultOnDone, parseInt(article.style.transitionDuration));" />
+    </footer>
+</body>
+
+<script>
+    const article = document.querySelector('article');
+    const footer = document.querySelector('footer');
+    const spinner = document.querySelector('spinner');
+</script>
+
+</html>
