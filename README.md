@@ -76,6 +76,6 @@ markov.predict(length, {start, alpha}?);
 
 ### Methods
 
-`train(sample, callback)` - Train the chain with a sample. This function adds values to the existing chain. <br />
-`predict(length, { start, alpha })` - Predict or Generate string using chain. <br />
+`train(sample, callback?)` - Train the chain with a sample. This function adds values to the existing chain. <br />
+`predict(length, { start, alpha }?)` - Predict or Generate string using chain. <br />
 `clear()` - Clears existing chains to start anew. <br />

@@ -92,7 +92,6 @@ class Markov {
 
                     // Well boys. Worker is no more.
                     postMessage({ chain: chain });
-                    this.close();
                 })
             }.toString()
 
@@ -144,6 +143,8 @@ class Markov {
                     if (typeof onComplete === 'function')
                         onComplete();
                 }
+
+                worker.terminate();
 
             }, false)
 
