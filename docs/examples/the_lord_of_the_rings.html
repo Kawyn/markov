@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+
+    <title>Markov - The Lord of the Rings</title>
+
+    <script src="https://kawyn.github.io/markov/lib/main.min.js"></script>
+    <script>
+        const markov = new Markov('', 15);
+        markov.debug = true;
+
+        fetch('../data/the-lord-of-the-rings.txt').then(response => {
+
+            response.text().then(text => {
+
+                markov.train(text, () => {
+
+                    document.querySelector('div').textContent = markov.predict(10000, { start: "A" });
+                });
+            });
+        });
+    </script>
+
+    <style>
+        html {
+
+            display: flex;
+            justify-content: center;
+
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif
+        }
+
+        body {
+
+            width: 60%;
+            min-width: 600px;
+        }
+
+        p {
+            color: gray;
+        }
+
+        div {
+
+            font-size: large;
+            white-space: break-spaces;
+        }
+
+    </style>
+</head>
+
+<body>
+    <h1>The Lord of The Rings</h1>
+    <p>Seperator: '', Length: 15. Training will take around 60 sec. Please wait...</p>
+    <hr />
+    <div></div>
+
+    <script>
+        document.addEventListener('scroll', e => {
+
+            if (window.pageYOffset > document.body.scrollHeight - window.innerHeight - 250)
+                document.querySelector('div').textContent += markov.predict(10000, { start: document.querySelector('div').textContent });
+        });
+    </script>
+</body>
+
+</html>

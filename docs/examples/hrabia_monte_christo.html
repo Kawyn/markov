@@ -4,111 +4,66 @@
 <head>
     <meta charset="UTF-8" />
 
-    <title>Dandelion</title>
+    <title>Markov - Chrabia Monte Christo</title>
 
-    <link rel="stylesheet" href="main.css">
+    <script src="https://kawyn.github.io/markov/lib/main.min.js"></script>
+    <script>
+        const markov = new Markov('', 20);
+        markov.debug = true;
 
-    <script src="../../src/index.js"></script>
-    <script async>
-        const dandelion = new Dandelion();
+        fetch('../data/hrabia_monte_christo.txt').then(response => {
 
-        dandelion.defaultOnStart = () => {
-
-            article.innerHTML = '';
-            article.style.opacity = 0;
-
-            footer.style.opacity = 0;
-
-            spinner.style.opacity = 1;
-        }
-
-        dandelion.defaultRefreshRate = 100;
-        dandelion.defaultOnRefresh = null;
-
-        dandelion.defaultOnDone = () => {
-
-            if (!dandelion.sequences)
-                return;
-
-            article.innerHTML = '';
-            article.style.opacity = 1;
-
-            footer.style.opacity = 1;
-
-            spinner.style.opacity = 0;
-
-            const words = dandelion.predict({
-                start: /^[A-Z]/,
-                size: document.querySelector('input[name="size"]').value
-            });
-
-            for (const w of words) {
-
-                if (dandelion.type === 'words') {
-
-                    if (!Object.values(CHARACTERS_TO_PADE).some(value => { return w === value }))
-                        article.innerHTML += ' ';
-                }
-
-                article.innerHTML += w;
-            }
-
-            article.innerHTML = article.innerHTML.split('\n ').join('\n');
-            article.innerHTML = article.innerHTML.trim() + '...';
-        }
-
-        fetch('../../data/hrabia_monte_christo.txt').then(response => {
             response.text().then(text => {
-                dandelion.train(text);
+
+                markov.train(text, () => {
+
+                    document.querySelector('div').textContent = markov.predict(10000, { start: "Monte Christo" });
+                });
             });
         });
     </script>
+
+    <style>
+        html {
+
+            display: flex;
+            justify-content: center;
+
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif
+        }
+
+        body {
+
+            width: 60%;
+            min-width: 600px;
+        }
+
+        p {
+            color: gray;
+        }
+
+        div {
+
+            font-size: large;
+            white-space: break-spaces;
+        }
+
+    </style>
 </head>
 
 <body>
-    <header>
-        <h1>Hrabia Monte Christo</h1>
-        <hr />
+    <h1>Hrabia Monte Christo</h1>
+    <p>Seperator: '', Length: 20. Training will take around 60 sec. Please wait...</p>
+    <hr />
+    <div></div>
 
-        <div>
-            Typ łańcucha:<br />
-            <select onchange="dandelion.type = value === 'Słowny' ? 'words': 'chars';">
-                <option> Słowny </option>
-                <option> Literowy </option>
-            </select>
-        </div>
+    <script>
+        document.addEventListener('scroll', e => {
 
-        <div>
-            Długość łańcucha:<br />
-            <input type="number" min="1" value="3" onchange="dandelion.K = +this.value" />
-        </div>
-
-        <div>
-            Długość opowiadania (w typie łańcucha):<br />
-            <input type="number" name="size" min="1" value="2500" onchange="dandelion.defaultOnStart(); setTimeout(dandelion.defaultOnDone, parseInt(article.style.transitionDuration));" />
-        </div>
-
-        <hr />
-    </header>
-
-    <spinner>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-    </spinner>
-
-    <article style="transition-duration: 1000ms;"></article>
-
-    <footer style="opacity: 0;">
-        <input type="button" value="Nowe Opowiadanie" onmouseup="dandelion.defaultOnStart(); setTimeout(dandelion.defaultOnDone, parseInt(article.style.transitionDuration));" />
-    </footer>
+            if (window.pageYOffset > document.body.scrollHeight - window.innerHeight - 250)
+                document.querySelector('div').textContent += markov.predict(10000, { start: document.querySelector('div').textContent });
+        });
+    </script>
 </body>
-
-<script>
-    const article = document.querySelector('article');
-    const footer = document.querySelector('footer');
-    const spinner = document.querySelector('spinner');
-</script>
 
 </html>
