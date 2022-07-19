@@ -1,5 +1,3 @@
-# MARKOV
-
 Multithreading implemetation of Markov Chain in JavaScript.
 
 ## Instalation
@@ -24,7 +22,9 @@ const markov = new Markov(seperator?, length?, threads?);
 After creating Markov Chain you can train it using train function:
 
 ```js
-markov.train(sample, callback?);
+// Sample is text which will be used to generate chain (this method adds links to existing chain).
+// Callback called after training is done.
+markov.train(sample, onComplete?);
 ```
 
 Then to generate text use:
@@ -34,6 +34,11 @@ Then to generate text use:
 // Start is a starting sequence of output.
 // Alpha is a number wchich defines the importance of probability (check how markov chains works).
 markov.predict(length, {start, alpha}?);
+```
+
+If you wish so, you can clear chain calling:
+```js
+markov.clear();
 ```
 
 ## Template
@@ -61,21 +66,13 @@ markov.predict(length, {start, alpha}?);
 -   [LOTR (en)](https://kawyn.github.io/markov/docs/examples/the_lord_of_the_rings.html)
 -   [Hrabia Monte Christo (pl)](https://kawyn.github.io/markov/docs/examples/hrabia_monte_christo.html)
 
-## Docs
+## Properties
+| Property | Default Value | Description | 
+| --- | :---: | --- |
+| chain | Empty Object | Chain of the Instance of Markov. |
+| seperator | C* | Character or characters that seperates chain's links (readonly). |
+| length | C* | Number which represent the depth of chain (readonly). |
+| threads | C* | Number which defines number of threads. |
+| debug | false | Boolean which detemining displaying of progress. |
 
-### Properties
-
-`chain` - Chain of the Instance of Markov. <br />
-
-`seperator` - Character or characters that seperates chain's links (readonly). <br />
-`length` - Number which represent the depth of chain (readonly). <br />
-
-`threads` - Number which defines number of threads. <br />
-
-`debug` - Boolean which detemining displaying of progress. <br />
-
-### Methods
-
-`train(sample, callback?)` - Train the chain with a sample. This function adds values to the existing chain. <br />
-`predict(length, { start, alpha }?)` - Predict or Generate string using chain. <br />
-`clear()` - Clears existing chains to start anew. <br />
+\*Defined in constructor.
